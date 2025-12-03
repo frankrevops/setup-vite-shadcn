@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# WORKING shadcn/ui complete setup - December 2025
-# Handles both fresh installs and existing projects
+# shadcn/ui WORKING setup with Tailwind v3 - December 2025
+# Forces v3 to avoid v4 PostCSS breaking changes
 # Run: bash setup.sh
 
 SCRIPT_DIR="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,7 +10,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT_DIR"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "shadcn/ui Complete Setup"
+echo "shadcn/ui Complete Setup (Tailwind v3)"
 echo "Working in: $ROOT_DIR"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -327,25 +327,27 @@ EOF
 fi
 
 echo ""
-echo "==> Checking dependencies..."
-if [ ! -d node_modules ]; then
-  echo "Installing dependencies..."
-  npm install react@^18.3.1 react-dom@^18.3.1
-  npm install -D \
-    @types/react@^18.3.12 \
-    @types/react-dom@^18.3.1 \
-    @vitejs/plugin-react@^4.3.4 \
-    typescript@^5.7.2 \
-    vite@^6.0.3 \
-    tailwindcss@latest \
-    postcss \
-    autoprefixer \
-    tailwindcss-animate
-  
-  npm install clsx tailwind-merge class-variance-authority
-else
-  echo "node_modules exists, skipping base install"
-fi
+echo "==> Removing any existing Tailwind v4 installations..."
+npm uninstall tailwindcss @tailwindcss/postcss @tailwindcss/vite 2>/dev/null || true
+
+echo ""
+echo "==> Installing base dependencies..."
+npm install react@^18.3.1 react-dom@^18.3.1
+
+echo ""
+echo "==> Installing Tailwind v3 (CRITICAL: v3 not v4)..."
+npm install -D \
+  @types/react@^18.3.12 \
+  @types/react-dom@^18.3.1 \
+  @vitejs/plugin-react@^4.3.4 \
+  typescript@^5.7.2 \
+  vite@^6.0.3 \
+  tailwindcss@3 \
+  postcss \
+  autoprefixer \
+  tailwindcss-animate
+
+npm install clsx tailwind-merge class-variance-authority
 
 # Only run init if needed
 if [ "$NEEDS_INIT" = true ]; then
@@ -403,7 +405,7 @@ fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ SETUP COMPLETE"
+echo "✅ SETUP COMPLETE (Tailwind v3)"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Components: src/components/ui/"
